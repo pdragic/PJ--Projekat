@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="sr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ekipa Barselone</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
+        integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body data-bs-theme="dark">
+    <nav class="navbar navbar-expand-lg bg-body-tertiary mb-3">
+        <div class="container">
+            <a class="navbar-brand" href="./index.html">
+                <i class="fa-solid fa-futbol"></i> Ekipa Barselone
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link" href="./index.html">
+                            <i class="fa-regular fa-house"></i> Pocetna
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Link</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="row align-items-start mt-4">
+
+            <!-- Kolona 1: Slika -->
+            <div class="col-md-2 text-center">
+                <img id="slika" class="rounded-circle" style="width:150px; height:150px;">
+            </div>
+
+            <!-- Kolona 2: Osnovni podaci -->
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 id="ime"></h3>
+                    </div>
+                    <div class="card-body p-0">
+                        <p id="pozicija" class="px-3 pt-2"></p>
+                        <ul class="list-group list-group-flush fw-bold">
+                            <li id="visina" class="list-group-item"></li>
+                            <li id="tezina" class="list-group-item"></li>
+                            <li id="godine" class="list-group-item"></li>
+                            <li id="nacionalnost" class="list-group-item"></li>
+                            <li id="dres" class="list-group-item"></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kolona 3: Statistika -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5><i class="fa-solid fa-chart-bar me-2"></i>Statistika</h5>
+                    </div>
+                    <div class="card-body p-0" id="statistika">
+                        <p class="p-3">Učitavanje...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+    <script>
+        const parametri = new URLSearchParams(window.location.search)
+        const id = parametri.get('id')
+
+        fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/teams/83/roster')
+            .then(rsp => rsp.json())
+            .then(data => {
+                const igrac = data.athletes.find(p => p.id == id)
+
+                if (igrac) {
+                    const pozicija = igrac.position?.name || ''
+
+                    // Slika
+                    document.getElementById('slika').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(igrac.fullName)}&background=0D47A1&color=fff&size=200&bold=true`
+
+                    // Osnovni podaci
+                    document.getElementById('ime').innerText = igrac.fullName
+                    document.getElementById('pozicija').innerText = pozicija
+                    document.getElementById('visina').innerHTML = '<i class="fa-solid fa-ruler-vertical"></i> Visina: ' + (igrac.displayHeight || '-')
+                    document.getElementById('tezina').innerHTML = '<i class="fa-solid fa-weight-scale"></i> Težina: ' + (igrac.displayWeight || '-')
+                    document.getElementById('godine').innerHTML = '<i class="fa-solid fa-cake-candles"></i> Godine: ' + (igrac.age || '-')
+                    document.getElementById('nacionalnost').innerHTML = '<i class="fa-solid fa-flag"></i> Nacionalnost: ' + (igrac.citizenship || '-')
+                    document.getElementById('dres').innerHTML = '<i class="fa-solid fa-shirt"></i> Broj dresa: ' + (igrac.jersey || '-')
+
+                    // Statistika po poziciji
+                    let statsHtml = '<ul class="list-group list-group-flush">'
+
+                    if (pozicija === 'Goalkeeper') {
+                        statsHtml += stat('fa-shield', 'Saves', igrac.saves || '-')
+                        statsHtml += stat('fa-circle-xmark', 'Goals Conceded', igrac.goalsConceded || '-')
+                        statsHtml += stat('fa-hand', 'Shots Faced', igrac.shotsFaced || '-')
+                        statsHtml += stat('fa-lock', 'Clean Sheets', igrac.cleanSheets || '-')
+                    } else if (pozicija === 'Defender') {
+                        statsHtml += stat('fa-shield-halved', 'Tackles', igrac.tackles || '-')
+                        statsHtml += stat('fa-ban', 'Interceptions', igrac.interceptions || '-')
+                        statsHtml += stat('fa-arrow-up', 'Clearances', igrac.clearances || '-')
+                        statsHtml += stat('fa-futbol', 'Goals', igrac.goals || '-')
+                    } else if (pozicija === 'Midfielder') {
+                        statsHtml += stat('fa-futbol', 'Goals', igrac.goals || '-')
+                        statsHtml += stat('fa-hands-helping', 'Assists', igrac.assists || '-')
+                        statsHtml += stat('fa-circle-dot', 'Passes', igrac.passes || '-')
+                        statsHtml += stat('fa-shield-halved', 'Tackles', igrac.tackles || '-')
+                    } else if (pozicija === 'Forward') {
+                        statsHtml += stat('fa-futbol', 'Goals', igrac.goals || '-')
+                        statsHtml += stat('fa-hands-helping', 'Assists', igrac.assists || '-')
+                        statsHtml += stat('fa-bullseye', 'Shots', igrac.shots || '-')
+                        statsHtml += stat('fa-bullseye', 'Shots on Target', igrac.shotsOnTarget || '-')
+                    }
+
+                    statsHtml += '</ul>'
+                    document.getElementById('statistika').innerHTML = statsHtml
+                }
+            })
+
+        function stat(ikona, naziv, vrednost) {
+            return `
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                <span><i class="fa-solid ${ikona} me-2"></i>${naziv}</span>
+                <strong>${vrednost}</strong>
+            </li>
+            `
+        }
+    </script>
+</body>
+
+</html>
