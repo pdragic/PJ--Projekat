@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
         integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <style>
+            .text-justify{
+                text-align: justify;
+            }
+        </style>
 </head>
 
 <body data-bs-theme="dark">
@@ -31,7 +36,9 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
+                        <a class="nav-link active" href="./lista.html">
+                            <i class="fa-solid fa-list"></i> Lista
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -42,16 +49,16 @@
 
             <!-- Kolona 1: Slika -->
             <div class="col-md-2 text-center">
-                <img id="slika" class="rounded-circle" style="width:150px; height:150px;">
+                <img id="slika" class="rounded-circle  mb-3" style="width:150px; height:150px;">
             </div>
 
             <!-- Kolona 2: Osnovni podaci -->
             <div class="col-md-4">
-                <div class="card">
+                <div class="card mb-3">
                     <div class="card-header">
                         <h3 id="ime"></h3>
                     </div>
-                    <div class="card-body p-0">
+                    <div class="card-body text-justify p-0">
                         <p id="pozicija" class="px-3 pt-2"></p>
                         <ul class="list-group list-group-flush fw-bold">
                             <li id="visina" class="list-group-item"></li>
@@ -66,8 +73,8 @@
 
             <!-- Kolona 3: Statistika -->
             <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
+                <div class="card mb-3">
+                    <div class="card-header fw-bold">
                         <h5><i class="fa-solid fa-chart-bar me-2"></i>Statistika</h5>
                     </div>
                     <div class="card-body p-0" id="statistika">

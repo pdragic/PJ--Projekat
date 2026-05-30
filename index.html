@@ -38,12 +38,14 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="./index.html">
+                        <a class="nav-link active" href="./index.html">
                             <i class="fa-regular fa-house"></i> Pocetna
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Link</a>
+                        <a class="nav-link active" href="./lista.html">
+                            <i class="fa-solid fa-list"></i> Lista
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -78,7 +80,7 @@
 
                     for (let player of grupa) {
                         const ime = player.fullName
-                        const pozicija = player.position?.name 
+                        const pozicija = player.position?.name
                         const slika = `https://ui-avatars.com/api/?name=${encodeURIComponent(ime)}&background=random&size=200&bold=true`
 
                         content += `
@@ -104,5 +106,5 @@
             })
     </script>
 </body>
- 
+
 </html>
