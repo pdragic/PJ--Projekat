@@ -64,7 +64,7 @@
     <script>
         const teams = document.getElementById('teams')
 
-        fetch('http://localhost:8080/api/teams')
+        fetch('/api/teams')
             .then(rsp => rsp.json())
             .then(data => {
                 let content = ''
