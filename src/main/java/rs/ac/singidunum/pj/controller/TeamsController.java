@@ -19,7 +19,10 @@ public class TeamsController {
     // GET sve timove
     @GetMapping
     public List<Teams> getAll() {
-        return teamsRepository.findAll();
+        return teamsRepository.findAll()
+                .stream()
+                .filter(t -> t.getDeletedAt() == null)
+                .collect(java.util.stream.Collectors.toList());
     }
 
     // GET jedan tim po ID-u
@@ -44,6 +47,10 @@ public class TeamsController {
     // DELETE obrisi tim
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
-        teamsRepository.deleteById(id);
+        Teams team = teamsRepository.findById(id).orElse(null);
+        if (team != null) {
+            team.setDeletedAt(java.time.LocalDateTime.now());
+            teamsRepository.save(team);
+        }
     }
 }

@@ -53,6 +53,7 @@
                     <th>Sport</th>
                     <th>Grad</th>
                     <th>Liga</th>
+                    <th class="text-center">Akcije</th>
                 </tr>
             </thead>
             <tbody id="teams"></tbody>
@@ -77,12 +78,31 @@
                         <td>${team.sport}</td>
                         <td>${team.city}</td>
                         <td>${team.league}</td>
+                        <td class="text-center">
+                        <button class="btn btn-warning btn-sm" onclick="izmeni(${team.id})">
+                            <i class="fa-solid fa-pen"></i> Izmeni
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="obrisi(${team.id})">
+                            <i class="fa-solid fa-trash"></i> Obriši
+                        </button>
+                        </td>
                     </tr>
                     `
                 }
 
                 teams.innerHTML = content
             })
+
+        function obrisi(id) {
+            if (confirm('Da li si siguran?')) {
+                fetch(`/api/teams/${id}`, { method: 'DELETE' })
+                    .then(() => location.reload())
+            }
+        }
+
+        function izmeni(id) {
+            window.location.href = `izmeni-tim.html?id=${id}`
+        }
     </script>
 </body>
 
