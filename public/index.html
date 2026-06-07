@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ekipa Barselone</title>
+    <title>Pocetna :: Ekipa Barselone</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
@@ -62,53 +62,54 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/alerts.js"></script>
     <script>
-        fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/teams/83/roster')
-            .then(rsp => rsp.json())
-            .then(data => {
-                const igraci = data.athletes || []
+        retrieveData('/api/teams/barcelona-roster', (data) => {
+            const igraci = data.athletes || []
 
-                const grupe = {
-                    'Golmani': igraci.filter(p => p.position?.name === 'Goalkeeper'),
-                    'Odbrana': igraci.filter(p => p.position?.name === 'Defender'),
-                    'Vezni red': igraci.filter(p => p.position?.name === 'Midfielder'),
-                    'Napad': igraci.filter(p => p.position?.name === 'Forward')
+            const grupe = {
+                'Golmani': igraci.filter(p => p.position?.name === 'Goalkeeper'),
+                'Odbrana': igraci.filter(p => p.position?.name === 'Defender'),
+                'Vezni red': igraci.filter(p => p.position?.name === 'Midfielder'),
+                'Napad': igraci.filter(p => p.position?.name === 'Forward')
+            }
+
+            const lista = document.getElementById('players')
+            let content = ''
+
+            for (let [naziv, grupa] of Object.entries(grupe)) {
+                if (grupa.length === 0) continue
+
+                content += `<h3 class="mt-4 mb-3">${naziv}</h3><div class="row">`
+
+                for (let player of grupa) {
+                    const ime = player.fullName
+                    const pozicija = player.position?.name
+                    const slika = `https://ui-avatars.com/api/?name=${encodeURIComponent(ime)}&background=random&size=200&bold=true`
+
+                    content += `
+                    <div class="col-6 col-md-3 mb-3">
+                    <div class="card barcelona-card">
+                        <img src="${slika}" class="card-img-top">
+                        <div class="card-body p-2">
+                        <h6 class="card-title">${ime}</h6>
+                        <p class="card-text small">${pozicija}</p>
+                        <a href="data.html?id=${player.id}" class="btn btn-primary btn-sm">
+                            <i class="fa-solid fa-circle-info"></i> Podaci
+                        </a>
+                        </div>
+                    </div>
+                    </div>
+                    `
                 }
 
-                const lista = document.getElementById('players')
-                let content = ''
+                content += `</div>`
+            }
 
-                for (let [naziv, grupa] of Object.entries(grupe)) {
-                    if (grupa.length === 0) continue
-
-                    content += `<h3 class="mt-4 mb-3">${naziv}</h3><div class="row">`
-
-                    for (let player of grupa) {
-                        const ime = player.fullName
-                        const pozicija = player.position?.name
-                        const slika = `https://ui-avatars.com/api/?name=${encodeURIComponent(ime)}&background=random&size=200&bold=true`
-
-                        content += `
-                            <div class="col-6 col-md-3 mb-3">
-                            <div class="card barcelona-card">
-                                <img src="${slika}" class="card-img-top">
-                                <div class="card-body p-2">
-                                <h6 class="card-title">${ime}</h6>
-                                <p class="card-text small">${pozicija}</p>
-                                <a href="data.html?id=${player.id}" class="btn btn-primary btn-sm">
-                                    <i class="fa-solid fa-circle-info"></i> Podaci
-                                </a>
-                                </div>
-                            </div>
-                            </div>
-                        `
-                    }
-
-                    content += `</div>`
-                }
-
-                lista.innerHTML = content
-            })
+            lista.innerHTML = content
+        })
+ 
     </script>
 </body>
 

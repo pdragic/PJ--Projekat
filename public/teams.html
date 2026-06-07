@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sr">
 
 <head>
     <meta charset="UTF-8">
@@ -58,50 +58,55 @@
             </thead>
             <tbody id="teams"></tbody>
         </table>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <a href="/new-team.html" class="btn btn-success">
+                <i class="fa-solid fa-plus"></i> Dodaj tim
+            </a>
+        </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/alerts.js"></script>
     <script>
         const teams = document.getElementById('teams')
 
-        fetch('/api/teams')
-            .then(rsp => rsp.json())
-            .then(data => {
-                let content = ''
+        retrieveData('/api/teams', (data) => {
+            let content = ''
 
-                for (let team of data) {
-                    content += `
-                    <tr>
-                        <td>${team.id}</td>
-                        <td>${team.name}</td>
-                        <td>${team.sport}</td>
-                        <td>${team.city}</td>
-                        <td>${team.league}</td>
-                        <td class="text-center">
-                        <button class="btn btn-warning btn-sm" onclick="izmeni(${team.id})">
-                            <i class="fa-solid fa-pen"></i> Izmeni
-                        </button>
-                        <button class="btn btn-danger btn-sm" onclick="obrisi(${team.id})">
-                            <i class="fa-solid fa-trash"></i> Obriši
-                        </button>
-                        </td>
-                    </tr>
-                    `
-                }
+            for (let team of data) {
+                content += `
+                <tr>
+                    <td>${team.id}</td>
+                    <td>${team.name}</td>
+                    <td>${team.sport}</td>
+                    <td>${team.city}</td>
+                    <td>${team.league}</td>
+                    <td class="text-center">
+                    <button class="btn btn-warning btn-sm" onclick="izmeni(${team.id})">
+                        <i class="fa-solid fa-pen"></i> Izmeni
+                    </button>
+                    <button class="btn btn-danger btn-sm" onclick="obrisi(${team.id})">
+                        <i class="fa-solid fa-trash"></i> Obriši
+                    </button>
+                    </td>
+                </tr>
+                `
+            }
 
-                teams.innerHTML = content
-            })
+            teams.innerHTML = content
+        })
 
         function obrisi(id) {
-            if (confirm('Da li si siguran?')) {
+            showConfirm('Da li si siguran?', () => {
                 fetch(`/api/teams/${id}`, { method: 'DELETE' })
                     .then(() => location.reload())
-            }
+            })
         }
 
         function izmeni(id) {
-            window.location.href = `izmeni-tim.html?id=${id}`
+            window.location.href = `/edit-team.html?id=${id}`
         }
     </script>
 </body>

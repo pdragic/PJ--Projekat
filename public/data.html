@@ -4,17 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ekipa Barselone</title>
+    <title>Podaci</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
         integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-        <style>
-            .text-justify{
-                text-align: justify;
-            }
-        </style>
+    <link rel="stylesheet" href="css/public.css" />
 </head>
 
 <body data-bs-theme="dark">
@@ -93,59 +89,59 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/alerts.js"></script>
     <script>
         const parametri = new URLSearchParams(window.location.search)
         const id = parametri.get('id')
 
-        fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/teams/83/roster')
-            .then(rsp => rsp.json())
-            .then(data => {
-                const igrac = data.athletes.find(p => p.id == id)
+        retrieveData(`/api/teams/barcelona-roster`, (data) => {
+            const igrac = data.athletes.find(p => p.id == id)
 
-                if (igrac) {
-                    const pozicija = igrac.position?.name || ''
+            if (igrac) {
+                const pozicija = igrac.position?.name || ''
 
-                    // Slika
-                    document.getElementById('slika').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(igrac.fullName)}&background=0D47A1&color=fff&size=200&bold=true`
+                // Slika
+                document.getElementById('slika').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(igrac.fullName)}&background=0D47A1&color=fff&size=200&bold=true`
 
-                    // Osnovni podaci
-                    document.getElementById('ime').innerText = igrac.fullName
-                    document.getElementById('pozicija').innerText = pozicija
-                    document.getElementById('visina').innerHTML = '<i class="fa-solid fa-ruler-vertical"></i> Visina: ' + (igrac.displayHeight || '-')
-                    document.getElementById('tezina').innerHTML = '<i class="fa-solid fa-weight-scale"></i> Težina: ' + (igrac.displayWeight || '-')
-                    document.getElementById('godine').innerHTML = '<i class="fa-solid fa-cake-candles"></i> Godine: ' + (igrac.age || '-')
-                    document.getElementById('nacionalnost').innerHTML = '<i class="fa-solid fa-flag"></i> Nacionalnost: ' + (igrac.citizenship || '-')
-                    document.getElementById('dres').innerHTML = '<i class="fa-solid fa-shirt"></i> Broj dresa: ' + (igrac.jersey || '-')
+                // Osnovni podaci
+                document.getElementById('ime').innerText = igrac.fullName
+                document.getElementById('pozicija').innerText = pozicija
+                document.getElementById('visina').innerHTML = '<i class="fa-solid fa-ruler-vertical"></i> Visina: ' + (igrac.displayHeight || '-')
+                document.getElementById('tezina').innerHTML = '<i class="fa-solid fa-weight-scale"></i> Težina: ' + (igrac.displayWeight || '-')
+                document.getElementById('godine').innerHTML = '<i class="fa-solid fa-cake-candles"></i> Godine: ' + (igrac.age || '-')
+                document.getElementById('nacionalnost').innerHTML = '<i class="fa-solid fa-flag"></i> Nacionalnost: ' + (igrac.citizenship || '-')
+                document.getElementById('dres').innerHTML = '<i class="fa-solid fa-shirt"></i> Broj dresa: ' + (igrac.jersey || '-')
 
-                    // Statistika po poziciji
-                    let statsHtml = '<ul class="list-group list-group-flush">'
+                // Statistika po poziciji
+                let statsHtml = '<ul class="list-group list-group-flush">'
 
-                    if (pozicija === 'Goalkeeper') {
-                        statsHtml += stat('fa-shield', 'Saves', igrac.saves || '-')
-                        statsHtml += stat('fa-circle-xmark', 'Goals Conceded', igrac.goalsConceded || '-')
-                        statsHtml += stat('fa-hand', 'Shots Faced', igrac.shotsFaced || '-')
-                        statsHtml += stat('fa-lock', 'Clean Sheets', igrac.cleanSheets || '-')
-                    } else if (pozicija === 'Defender') {
-                        statsHtml += stat('fa-shield-halved', 'Tackles', igrac.tackles || '-')
-                        statsHtml += stat('fa-ban', 'Interceptions', igrac.interceptions || '-')
-                        statsHtml += stat('fa-arrow-up', 'Clearances', igrac.clearances || '-')
-                        statsHtml += stat('fa-futbol', 'Goals', igrac.goals || '-')
-                    } else if (pozicija === 'Midfielder') {
-                        statsHtml += stat('fa-futbol', 'Goals', igrac.goals || '-')
-                        statsHtml += stat('fa-hands-helping', 'Assists', igrac.assists || '-')
-                        statsHtml += stat('fa-circle-dot', 'Passes', igrac.passes || '-')
-                        statsHtml += stat('fa-shield-halved', 'Tackles', igrac.tackles || '-')
-                    } else if (pozicija === 'Forward') {
-                        statsHtml += stat('fa-futbol', 'Goals', igrac.goals || '-')
-                        statsHtml += stat('fa-hands-helping', 'Assists', igrac.assists || '-')
-                        statsHtml += stat('fa-bullseye', 'Shots', igrac.shots || '-')
-                        statsHtml += stat('fa-bullseye', 'Shots on Target', igrac.shotsOnTarget || '-')
-                    }
-
-                    statsHtml += '</ul>'
-                    document.getElementById('statistika').innerHTML = statsHtml
+                if (pozicija === 'Goalkeeper') {
+                    statsHtml += stat('fa-shield', 'Saves', igrac.saves || '-')
+                    statsHtml += stat('fa-circle-xmark', 'Goals Conceded', igrac.goalsConceded || '-')
+                    statsHtml += stat('fa-hand', 'Shots Faced', igrac.shotsFaced || '-')
+                    statsHtml += stat('fa-lock', 'Clean Sheets', igrac.cleanSheets || '-')
+                } else if (pozicija === 'Defender') {
+                    statsHtml += stat('fa-shield-halved', 'Tackles', igrac.tackles || '-')
+                    statsHtml += stat('fa-ban', 'Interceptions', igrac.interceptions || '-')
+                    statsHtml += stat('fa-arrow-up', 'Clearances', igrac.clearances || '-')
+                    statsHtml += stat('fa-futbol', 'Goals', igrac.goals || '-')
+                } else if (pozicija === 'Midfielder') {
+                    statsHtml += stat('fa-futbol', 'Goals', igrac.goals || '-')
+                    statsHtml += stat('fa-hands-helping', 'Assists', igrac.assists || '-')
+                    statsHtml += stat('fa-circle-dot', 'Passes', igrac.passes || '-')
+                    statsHtml += stat('fa-shield-halved', 'Tackles', igrac.tackles || '-')
+                } else if (pozicija === 'Forward') {
+                    statsHtml += stat('fa-futbol', 'Goals', igrac.goals || '-')
+                    statsHtml += stat('fa-hands-helping', 'Assists', igrac.assists || '-')
+                    statsHtml += stat('fa-bullseye', 'Shots', igrac.shots || '-')
+                    statsHtml += stat('fa-bullseye', 'Shots on Target', igrac.shotsOnTarget || '-')
                 }
-            })
+
+                statsHtml += '</ul>'
+                document.getElementById('statistika').innerHTML = statsHtml
+            }
+        })
 
         function stat(ikona, naziv, vrednost) {
             return `

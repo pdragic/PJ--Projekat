@@ -1,10 +1,10 @@
 package rs.ac.singidunum.pj.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import rs.ac.singidunum.pj.entity.Teams;
-import rs.ac.singidunum.pj.repo.TeamsRepository;
+import rs.ac.singidunum.pj.service.TeamsService;
 
 import java.util.List;
 
@@ -14,43 +14,46 @@ import java.util.List;
 public class TeamsController {
 
     @Autowired
-    private TeamsRepository teamsRepository;
+    private TeamsService teamsService;
 
-    // GET sve timove
     @GetMapping
     public List<Teams> getAll() {
-        return teamsRepository.findAll()
-                .stream()
-                .filter(t -> t.getDeletedAt() == null)
-                .collect(java.util.stream.Collectors.toList());
+        return teamsService.getAll();
     }
 
-    // GET jedan tim po ID-u
     @GetMapping("/{id}")
     public Teams getById(@PathVariable Long id) {
-        return teamsRepository.findById(id).orElse(null);
+        return teamsService.getById(id);
     }
 
-    // POST dodaj tim
     @PostMapping
     public Teams create(@RequestBody Teams team) {
-        return teamsRepository.save(team);
+        return teamsService.create(team);
     }
 
-    // PUT izmijeni tim
     @PutMapping("/{id}")
-    public Teams update(@PathVariable Long id, @RequestBody Teams team) {
-        team.setId(id);
-        return teamsRepository.save(team);
+    public ResponseEntity<Teams> update(@PathVariable Long id, @RequestBody Teams team) {
+        Teams updated = teamsService.update(id, team);
+        if (updated == null)
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(updated);
     }
 
-    // DELETE obrisi tim
     @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        Teams team = teamsRepository.findById(id).orElse(null);
-        if (team != null) {
-            team.setDeletedAt(java.time.LocalDateTime.now());
-            teamsRepository.save(team);
-        }
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        if (!teamsService.delete(id))
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/barcelona-roster")
+    public ResponseEntity<String> getBarcelonaRoster() throws Exception {
+        java.net.URL url = new java.net.URL(
+                "https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/teams/83/roster");
+        java.util.Scanner sc = new java.util.Scanner(url.openStream());
+        StringBuilder sb = new StringBuilder();
+        while (sc.hasNext())
+            sb.append(sc.nextLine());
+        return ResponseEntity.ok(sb.toString());
     }
 }

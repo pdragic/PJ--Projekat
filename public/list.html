@@ -76,28 +76,28 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
         crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/js/alerts.js"></script>
     <script>
-        fetch('https://site.api.espn.com/apis/site/v2/sports/soccer/esp.1/teams/83/roster')
-            .then(rsp => rsp.json())
-            .then(data => {
-                const igraci = data.athletes || []
+        retrieveData('/api/teams/barcelona-roster', (data) => {
+            const igraci = data.athletes || []
 
-                const grupe = {
-                    'Golmani': igraci.filter(p => p.position?.name === 'Goalkeeper'),
-                    'Odbrana': igraci.filter(p => p.position?.name === 'Defender'),
-                    'Vezni red': igraci.filter(p => p.position?.name === 'Midfielder'),
-                    'Napad': igraci.filter(p => p.position?.name === 'Forward')
-                }
+            const grupe = {
+                'Golmani': igraci.filter(p => p.position?.name === 'Goalkeeper'),
+                'Odbrana': igraci.filter(p => p.position?.name === 'Defender'),
+                'Vezni red': igraci.filter(p => p.position?.name === 'Midfielder'),
+                'Napad': igraci.filter(p => p.position?.name === 'Forward')
+            }
 
-                const lista = document.getElementById('players')
-                let content = ''
-                let broj = 1
+            const lista = document.getElementById('players')
+            let content = ''
+            let broj = 1
 
-                for (let [naziv, grupa] of Object.entries(grupe)) {
+            for (let [naziv, grupa] of Object.entries(grupe)) {
 
-                    if (grupa.length === 0) continue;
+                if (grupa.length === 0) continue;
 
-                    content += `
+                content += `
                         <tr class="table-warning">
                             <td colspan="9" class="fw-bold text-center">
                                 ${naziv}
@@ -105,8 +105,8 @@
                         </tr>
                     `
 
-                    for (let player of grupa) {
-                        content += `
+                for (let player of grupa) {
+                    content += `
                             <tr>
                                 <td>${broj++}</td>
                                 <td>${player.fullName || "-"}</td>
@@ -123,10 +123,10 @@
                                 </td>
                             </tr>
                         `
-                    }
                 }
-                lista.innerHTML = content
-            })
+            }
+            lista.innerHTML = content
+        })
     </script>
 </body>
 
